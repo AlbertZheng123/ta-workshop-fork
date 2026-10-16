@@ -3,7 +3,7 @@ import json
 from openai import OpenAI
 
 client = OpenAI(
-    api_key=os.getenv("OPENAI_API_KEY", "INSERET_YOUR_API_KEY_HERE"),
+    api_key=os.getenv("OPENAI_API_KEY", "INSERT_YOUR_API_KEY_HERE"),
 )
 
 def call_llm_json(prompt: str, system_prompt: str = "You output valid JSON.") -> dict:
