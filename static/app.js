@@ -1,3 +1,4 @@
+// Client-side rendering for the starter. The AI adds priority during the demo.
 document.addEventListener('DOMContentLoaded', fetchTasks);
 
 async function fetchTasks() {
@@ -8,10 +9,14 @@ async function fetchTasks() {
 
     tasks.forEach(task => {
         const li = document.createElement('li');
-        li.innerHTML = `
-            <span>${task.title}</span>
-            <button class="delete-btn" onclick="deleteTask(${task.id})">Delete</button>
-        `;
+        // A task title is user input, not HTML.
+        const title = document.createElement('span');
+        title.textContent = task.title;
+        const button = document.createElement('button');
+        button.className = 'delete-btn';
+        button.textContent = 'Delete';
+        button.addEventListener('click', () => deleteTask(task.id));
+        li.append(title, button);
         taskList.appendChild(li);
     });
 }

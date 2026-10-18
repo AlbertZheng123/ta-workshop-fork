@@ -1,5 +1,8 @@
 name: Autonomous AI Developer
 
+# TA-controlled: adding 'approved' spends model credit and may open a draft PR.
+# Requires a runner with Docker. Nothing in this workflow merges a PR.
+
 on:
   issues:
     types: [labeled]
@@ -8,6 +11,7 @@ jobs:
   run-agent:
     if: github.event.label.name == 'approved'
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     permissions:
       contents: write
       pull-requests: write
@@ -22,11 +26,17 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.12'
           cache: 'pip'
 
       - name: Install dependencies
         run: pip install -r requirements.txt
+
+      - name: Check trusted starter tests
+        run: python -m pytest tests -q
+
+      - name: Build isolated QA image
+        run: docker build -f Dockerfile.qa -t cs3300-workshop-qa:local .
 
       - name: Configure Git User
         run: |
@@ -37,5 +47,7 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WORKSHOP_ALLOW_PUBLISH: 'true'
+          WORKSHOP_BASE_BRANCH: ${{ github.event.repository.default_branch }}
         run: |
-          python -c "from orchestrator import run_multi_agent_pipeline; run_multi_agent_pipeline(${{ github.event.issue.number }})"
+          python main.py --mode multi --issue "${{ github.event.issue.number }}"

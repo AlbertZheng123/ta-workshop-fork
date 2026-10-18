@@ -1,4 +1,4 @@
 Flask==3.0.0
 pytest==7.4.3
-openai
-mcp
+openai==3.35.1
+mcp==2.3.0
