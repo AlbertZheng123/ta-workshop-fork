@@ -82,11 +82,23 @@ First live course-key rehearsal (same source commit in two fresh local clones):
   its exact invalid field cannot be established. The prompt left the plan's
   type ambiguous while the orchestrator required a string. The follow-up fix
   requests a strict output schema and includes five offline regression cases.
+- **Second multi-agent rehearsal passed the Planner schema gate and exercised
+  the real feedback loop.** Attempt 1 passed 13 Docker tests; the Reviewer
+  requested frontend checks. Attempt 2 added those checks and passed 16 Docker
+  tests, but the Reviewer identified a 500-error path: array/object priorities
+  reach set membership without a type guard. The two-attempt cost-saving cap
+  was reached, so the pipeline correctly failed and did not publish. The
+  normal workshop limit is four attempts; it was not increased automatically.
+  The issue requires missing priority to default to Medium; it does not specify
+  whether malformed priorities should default or return a validation error.
+  The Reviewer should not describe that extra defaulting policy as required.
 
 Not yet verified:
 
-- **Multi-agent live retry after the schema fix:** still needed. No model or
-  permission was substituted. Do not present the repair loop as verified yet.
+- **Completed multi-agent acceptance:** not yet achieved. Real feedback routing
+  is verified, but no final Reviewer approval has occurred. A controlled run
+  using the workshop's original four-attempt limit is the remaining check.
+  No model or permission was substituted; there is no success guarantee.
 - **Multi-agent frontend UI:** needs checking after a successful live retry.
 - **Live agent Actions / generated PR:** the agent has not been triggered and
   no model-generated PR has been tested. The human-authored review branch is
