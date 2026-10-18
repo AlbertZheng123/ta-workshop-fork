@@ -53,6 +53,9 @@ Completed locally with Python 3.12, without paid API or GitHub writes:
 - 36 passing starter/API and offline tool/orchestrator regression tests.
 - Actual MCP stdio initialization, app-file listing, and protected-read rejection.
 - Real MCP QA-result decoding and fail-closed handling when Docker is unavailable.
+- Real MCP-to-Docker execution after repairing the local runtime: all five
+  baseline app tests pass; the four priority acceptance checks fail as expected
+  on the intentionally unimplemented starter. The QA image builds successfully.
 - Mocked two-attempt feedback loop and four-attempt exhaustion.
 - Independent failure gates: rejected edits, failing QA, missing feature tests,
   Reviewer rejection, and publication errors.
@@ -63,8 +66,6 @@ Completed locally with Python 3.12, without paid API or GitHub writes:
 
 Not yet verified:
 
-- **Real Docker QA execution:** Docker CLI is installed, but the local daemon
-  was not running during review. Container/image flags were tested offline.
 - **Live model output:** no course API credits were spent. Model access,
   response size, actual repair behavior, and UI output need one controlled run.
 - **Live agent Actions / generated PR:** the agent has not been triggered and
