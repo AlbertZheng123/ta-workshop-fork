@@ -8,8 +8,9 @@ document or Aaron/Soham's slides. All new documentation is in English.
 
 Source: `CS-3300-Intro-to-Software-Eng/ta-workshop-starter`, snapshot
 `f1359e7c1d865e57a5e1fa39688bc2e0fd7b1052` (October 16, 2026).
-This local checkout was imported from that ZIP, not cloned with upstream
-history. Changes have **not been pushed** to GT GitHub.
+The review was first prepared from a ZIP, then applied to a clean clone of the
+shared repository with its real upstream history. Review branch:
+`codex/workshop-docs-and-guards`. These changes are not merged into `main`.
 
 ## Preserved
 
@@ -66,8 +67,9 @@ Not yet verified:
   was not running during review. Container/image flags were tested offline.
 - **Live model output:** no course API credits were spent. Model access,
   response size, actual repair behavior, and UI output need one controlled run.
-- **Live Actions / draft PR:** no label, remote branch, PR, or shared repository
-  was changed. GT runner availability remains a deployment prerequisite.
+- **Live agent Actions / generated PR:** the agent has not been triggered and
+  no model-generated PR has been tested. The human-authored review branch is
+  separate from that workflow. GT runner availability remains a prerequisite.
 
 ## Finish the team rehearsal
 
@@ -91,7 +93,10 @@ Discuss the deliberately test-free initial plan explicitly. It demonstrates
 feedback routing, not a fair performance or cost comparison. Do not promise
 that every run repairs in exactly two attempts.
 
-## Patch delivery
+## Review delivery
+
+Use the review branch for the latest version. Review the Docker and MCP changes
+before merging; the passing offline suite does not replace a live rehearsal.
 
 The accompanying patch contains only the review changes, not the imported
 snapshot commit. In a clean real clone at the source snapshot:
@@ -102,5 +107,5 @@ git am /absolute/path/to/the-review.patch
 ```
 
 If the shared repo has moved forward, review conflicts against its new changes
-instead of overwriting them. Remote publication still requires GT GitHub
-authorization; browser access alone does not authorize the terminal.
+instead of overwriting them. Publishing requires GT GitHub CLI authorization;
+browser access alone does not authorize the terminal.
