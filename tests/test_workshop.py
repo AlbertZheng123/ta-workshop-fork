@@ -9,7 +9,7 @@ import pytest
 import app as app_module
 import main
 import orchestrator
-from agents import single_agent
+from agents import planner, single_agent
 from tools import github, llm, qa, repository
 from tools.mcp_client import execute_mcp_tool
 
@@ -224,6 +224,67 @@ def test_model_key_is_required(monkeypatch):
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     with pytest.raises(RuntimeError, match="OPENAI_API_KEY"):
         llm.call_llm_json("Return JSON")
+
+
+def test_planner_supplies_explicit_output_schema(monkeypatch):
+    """Do not leave plan types or exact paths to JSON-mode guesswork."""
+    def model(prompt, *, response_schema):
+        assert "STRING" in prompt
+        assert response_schema["properties"]["plan"]["type"] == "string"
+        assert response_schema["properties"]["files_to_modify"]["items"][
+            "enum"] == list(repository.APP_FILES)
+        assert response_schema["additionalProperties"] is False
+        return {"files_to_modify": ["app.py"], "plan": "Add priority"}
+
+    monkeypatch.setattr(planner, "call_llm_json", model)
+    assert planner.create_plan("Add priority", "app.py")["plan"] == "Add priority"
+
+
+@pytest.mark.parametrize("plan", [
+    {"files_to_modify": ["app.py"], "plan": ["Add priority"]},
+    {"files_to_modify": ["./app.py"], "plan": "Add priority"},
+    {"files_to_modify": ["app.py"], "plan": " "},
+])
+def test_invalid_planner_output_stops_before_edits(fake_pipeline, monkeypatch, plan):
+    """Keep the local safety gate even when requesting a strict schema."""
+    monkeypatch.setattr(orchestrator, "create_plan", lambda *args: plan)
+    with pytest.raises(ValueError, match="Planner must return"):
+        orchestrator.run_multi_agent_pipeline(1)
+    assert "apply_edits" not in fake_pipeline["tools"]
+
+
+def test_model_schema_is_sent_without_retry_or_model_change(monkeypatch):
+    """Inspect real SDK arguments using a fake client, without paid calls."""
+    class FakeClient:
+        def __init__(self, **kwargs):
+            assert kwargs["max_retries"] == 0
+            self.chat = SimpleNamespace(completions=self)
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            pass
+
+        def create(self, **kwargs):
+            assert kwargs["model"] == "gpt-5.6-luna"
+            assert kwargs["response_format"] == {
+                "type": "json_schema", "json_schema": {
+                    "name": "workshop_response", "strict": True,
+                    "schema": planner.PLAN_SCHEMA,
+                },
+            }
+            return SimpleNamespace(choices=[SimpleNamespace(
+                finish_reason="stop", message=SimpleNamespace(
+                    content='{"files_to_modify":["app.py"],"plan":"Add priority"}',
+                ),
+            )])
+
+    monkeypatch.setenv("OPENAI_API_KEY", "offline-test-not-a-real-key")
+    monkeypatch.delenv("LLM_MODEL", raising=False)
+    monkeypatch.setattr(llm, "OpenAI", FakeClient)
+    result = llm.call_llm_json("Return JSON", response_schema=planner.PLAN_SCHEMA)
+    assert result["files_to_modify"] == ["app.py"]
 
 
 @pytest.mark.parametrize("content,finish", [

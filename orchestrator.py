@@ -25,10 +25,14 @@ def run_multi_agent_pipeline(issue_number: int, max_attempts: int = 4):
     plan = create_plan(issue, structure)
     if (not isinstance(plan, dict)
             or not isinstance(plan.get("plan"), str)
+            or not plan["plan"].strip()
             or not isinstance(plan.get("files_to_modify"), list)
             or not plan["files_to_modify"]
             or any(path not in APP_FILES for path in plan["files_to_modify"])):
-        raise ValueError("Planner must name allowed app files and a plan")
+        raise ValueError(
+            "Planner must return a non-empty string 'plan' and a non-empty "
+            "'files_to_modify' array containing only allowed app paths"
+        )
     feedback, test_output = None, None
     summaries = []
     for attempt in range(1, max_attempts + 1):

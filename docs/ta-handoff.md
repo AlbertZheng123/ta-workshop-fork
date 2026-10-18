@@ -45,12 +45,14 @@ shared repository with its real upstream history. Review branch:
   creates a draft PR. Enterprise API URLs are used for issue reads as well.
 - Dependencies are pinned to the inspected installation. OpenAI calls require
   a real configured key, disable automatic retries, and bound response tokens.
+- The Planner requests a strict JSON schema: exact allowlisted app paths and
+  a string plan. Local validation still rejects empty plans and unsafe paths.
 
 ## Verification — October 18, 2026
 
 Completed locally with Python 3.12, without paid API or GitHub writes:
 
-- 36 passing starter/API and offline tool/orchestrator regression tests.
+- 41 passing starter/API and offline tool/orchestrator regression tests.
 - Actual MCP stdio initialization, app-file listing, and protected-read rejection.
 - Real MCP QA-result decoding and fail-closed handling when Docker is unavailable.
 - Real MCP-to-Docker execution after repairing the local runtime: all five
@@ -64,10 +66,28 @@ Completed locally with Python 3.12, without paid API or GitHub writes:
 - Mocked Docker command/mount inspection and local mock publishing.
 - Model-response validation using a fake SDK client; no key is borrowed.
 
+First live course-key rehearsal (same source commit in two fresh local clones):
+
+- **Single agent passed:** one real model implementation, followed by 14
+  passing Docker tests (5 baseline, 4 TA acceptance, 5 generated feature tests).
+  Local publishing remained a mock; no generated branch or PR was pushed.
+- **Single-agent browser check passed:** Low/Medium/High selections and display,
+  default Medium after adding, refresh within the running server, literal
+  HTML-looking task titles, and deletion. The inspected generated app ran in
+  a temporary read-only, non-root Docker container exposed only on loopback,
+  with app assets only and no credentials/Git directory mounted. That preview
+  container has been stopped. Data remains intentionally in-memory.
+- **Multi agent stopped at the Planner contract check**, before any edits or
+  Developer call. The original log did not retain the Planner response, so
+  its exact invalid field cannot be established. The prompt left the plan's
+  type ambiguous while the orchestrator required a string. The follow-up fix
+  requests a strict output schema and includes five offline regression cases.
+
 Not yet verified:
 
-- **Live model output:** no course API credits were spent. Model access,
-  response size, actual repair behavior, and UI output need one controlled run.
+- **Multi-agent live retry after the schema fix:** still needed. No model or
+  permission was substituted. Do not present the repair loop as verified yet.
+- **Multi-agent frontend UI:** needs checking after a successful live retry.
 - **Live agent Actions / generated PR:** the agent has not been triggered and
   no model-generated PR has been tested. The human-authored review branch is
   separate from that workflow. GT runner availability remains a prerequisite.

@@ -122,6 +122,11 @@ Reviewer pairs. Single-agent uses one. Each call has a completion-token limit;
 this is **not a dollar-spend guarantee**. Watch the course group's $10 budget
 and avoid repeatedly rerunning a failed demo.
 
+The Planner uses a strict JSON output schema for exact app paths and a string
+plan. Local validation remains enabled; invalid model output stops the run
+before files are edited. There is no automatic schema-error retry or model
+substitution.
+
 **Teaching hook:** the initial Planner prompt deliberately omits test work so
 that the Reviewer can request tests. This is a controlled feedback-loop
 demonstration, not evidence that multi-agent systems outperform single agents.
