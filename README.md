@@ -21,6 +21,9 @@ python app.py
 On Windows, activate with `.venv\Scripts\activate`. Open
 `http://127.0.0.1:5000` to inspect the starter, then stop the app with Ctrl+C.
 
+For TA maintenance, run `python -m pytest tools/test_mcp.py -q` separately.
+These tooling checks are not part of the app's feature test suite.
+
 To run an agent flow, set `OPENAI_API_KEY` privately in your terminal using
 your course access, then run `python main.py` and choose 1 or 2. Do not put
 keys in source files, chat, screenshots, or commits. Local execution uses a

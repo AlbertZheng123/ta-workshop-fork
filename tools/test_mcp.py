@@ -1,4 +1,4 @@
-"""Offline checks for the MCP transport and the existing review loop."""
+"""Tooling checks, kept separate from the application's feature test suite."""
 
 import io
 import json
