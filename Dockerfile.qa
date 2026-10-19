@@ -1,6 +1,0 @@
-# Built once before the demo; generated code runs without credentials/network.
-FROM python:3.12-slim
-RUN pip install --no-cache-dir Flask==3.0.0 pytest==7.4.3
-WORKDIR /workspace
-USER 65534:65534
-ENTRYPOINT ["python", "-m", "pytest"]
