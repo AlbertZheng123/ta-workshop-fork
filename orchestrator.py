@@ -57,4 +57,7 @@ def run_multi_agent_pipeline(issue_number: int, max_attempts: int = 4):
             print(f"Pull Request Status: {pr_result}")
             return
 
+        if status == "REQUEST_MORE_TESTS" and "tests/test_app.py" not in files_needed:
+            files_needed.append("tests/test_app.py")
+
     print(f"\nPipeline failed after {max_attempts} attempts.")
