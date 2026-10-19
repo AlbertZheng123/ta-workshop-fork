@@ -92,14 +92,25 @@ First live course-key rehearsal (same source commit in two fresh local clones):
   The issue requires missing priority to default to Medium; it does not specify
   whether malformed priorities should default or return a validation error.
   The Reviewer should not describe that extra defaulting policy as required.
+- **Four-attempt live multi-agent run passed** on the reviewed source using
+  the unchanged course model. Round 1 stopped on an indentation error; round 2
+  passed 14 tests but received input-validation/frontend feedback; round 3
+  passed 19 tests and failed 2 malformed-input regressions; round 4 passed all
+  **21 tests** and received **APPROVE**. Local publishing remained a mock.
+- **Multi-agent browser check passed:** adding Low/Medium/High tasks, default
+  Medium and reset after adding, refresh within the running server, literal
+  HTML-looking titles, and deletion. This used the same temporary app-only,
+  read-only/non-root Docker preview setup; the container was stopped afterward.
+  Malformed-priority regressions are covered by the passing Docker suite.
+
+These runs demonstrate working local orchestration and feedback routing, not
+guaranteed model output or a performance comparison. The initial single-agent
+run and final multi-agent run use different reviewed source revisions after
+the Planner-schema fix. Keep the observed examples as a fallback and rehearse
+the exact final team checkout before teaching.
 
 Not yet verified:
 
-- **Completed multi-agent acceptance:** not yet achieved. Real feedback routing
-  is verified, but no final Reviewer approval has occurred. A controlled run
-  using the workshop's original four-attempt limit is the remaining check.
-  No model or permission was substituted; there is no success guarantee.
-- **Multi-agent frontend UI:** needs checking after a successful live retry.
 - **Live agent Actions / generated PR:** the agent has not been triggered and
   no model-generated PR has been tested. The human-authored review branch is
   separate from that workflow. GT runner availability remains a prerequisite.
@@ -113,9 +124,10 @@ Not yet verified:
    run `python -m pytest tests -q` on the trusted starter.
 4. Prepare two fresh clones of the same commit and the approved course key.
    Run `python main.py --check` in both; this spends no model credit.
-5. Run single once and multi once, watching the group's budget. Keep both
-   outputs. Confirm the actual feature in the browser and inspect generated
-   tests before running changed code on the host.
+5. The local single/multi paths and browser outputs have now been rehearsed.
+   If the final team checkout changes, repeat a controlled rehearsal while
+   watching the group's budget. Keep outputs, inspect generated tests, and
+   verify the feature in the browser before calling a new result ready.
 6. If using Actions, verify a runner, repository secret, and token permissions
    first. Use a test issue in the agreed workshop repository. Check that the
    resulting PR is a draft and do not merge it automatically.
