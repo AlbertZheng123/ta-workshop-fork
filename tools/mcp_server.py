@@ -126,7 +126,10 @@ def publish_pull_request(issue_number: int, summary: str) -> str:
 
     repo = os.getenv("GITHUB_REPOSITORY")
     token = os.getenv("GITHUB_TOKEN")
-    branch_name = f"feature-issue-{issue_number}"
+    # Separate branches for repeated demos and Actions re-runs of one issue.
+    run_id = os.getenv("GITHUB_RUN_ID", "manual")
+    attempt = os.getenv("GITHUB_RUN_ATTEMPT", "1")
+    branch_name = f"feature-issue-{issue_number}-{run_id}-{attempt}"
 
     try:
         # Git output must not mix with the MCP messages on stdout.

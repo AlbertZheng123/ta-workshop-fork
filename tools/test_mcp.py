@@ -95,18 +95,27 @@ def test_pytest_uses_current_python_without_tokens(monkeypatch):
     assert "one failure" in result["output"]
 
 
-def test_publish_keeps_git_output_off_mcp_stdout(monkeypatch):
+@pytest.mark.parametrize("run_id,attempt", [("101", "1"), ("101", "2"), ("102", "1")])
+def test_publish_keeps_git_output_off_mcp_stdout(monkeypatch, run_id, attempt):
     """Mock publication: no git push or GitHub request leaves this test."""
     monkeypatch.setenv("GITHUB_ACTIONS", "true")
     monkeypatch.setenv("GITHUB_REPOSITORY", "course/demo")
     monkeypatch.setenv("GITHUB_TOKEN", "test-only-placeholder")
+    monkeypatch.setenv("GITHUB_RUN_ID", run_id)
+    monkeypatch.setenv("GITHUB_RUN_ATTEMPT", attempt)
+    branch = f"feature-issue-42-{run_id}-{attempt}"
 
     def fake_run(command, **kwargs):
         assert kwargs["capture_output"] is True
+        if command[:3] == ["git", "checkout", "-b"]:
+            assert command[3] == branch
+        if command[:2] == ["git", "push"]:
+            assert command[-1] == branch
         return SimpleNamespace(stdout="M app.py", stderr="", returncode=0)
 
     def fake_urlopen(request):
         assert json.loads(request.data)["draft"] is True
+        assert json.loads(request.data)["head"] == branch
         return io.BytesIO(b'{"html_url":"https://example.test/pull/1"}')
 
     monkeypatch.setattr(mcp_server.subprocess, "run", fake_run)
@@ -143,7 +152,11 @@ def test_multi_requires_tests_and_review(monkeypatch, passes, decisions, publish
     monkeypatch.setattr(orchestrator, "review_feature",
                         lambda *args: {"status": next(reviews),
                                        "feedback": "add feature tests"})
-    orchestrator.run_multi_agent_pipeline(42, max_attempts=len(passes))
+    if published:
+        orchestrator.run_multi_agent_pipeline(42, max_attempts=len(passes))
+    else:
+        with pytest.raises(RuntimeError, match="Pipeline failed"):
+            orchestrator.run_multi_agent_pipeline(42, max_attempts=len(passes))
     assert bool(publications) is published
     if len(passes) > 1:
         assert contexts == [["app.py"], ["app.py", "tests/test_app.py"]]

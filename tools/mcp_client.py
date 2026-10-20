@@ -16,7 +16,7 @@ async def _execute(tool_name: str, arguments: dict):
     """Start the server, initialize MCP, call one tool, and close the session."""
     names = ("PATH", "HOME", "TMPDIR", "SYSTEMROOT", "WINDIR",
              "GITHUB_ACTIONS", "GITHUB_REPOSITORY", "GITHUB_TOKEN",
-             "GITHUB_API_URL")
+             "GITHUB_API_URL", "GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT")
     # Tools need GitHub access on Actions, but not the model API key.
     environment = {name: os.environ[name] for name in names if name in os.environ}
     server = StdioServerParameters(
