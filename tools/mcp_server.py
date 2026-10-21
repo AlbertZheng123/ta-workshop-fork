@@ -16,6 +16,8 @@ APP_FILES = ("app.py", "static/app.js", "static/style.css",
 
 def _allowed_path(name: str) -> Path:
     """Keep agent reads and edits inside the small exercise."""
+    if name == "test_app.py":
+      name = "tests/test_app.py"
     path = (ROOT / name).resolve()
     if path.relative_to(ROOT).as_posix() not in APP_FILES:
         raise ValueError(f"File is outside the exercise: {name}")
