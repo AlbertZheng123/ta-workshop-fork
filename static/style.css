@@ -24,15 +24,20 @@ h1 {
 
 .task-input {
     display: flex;
+    flex-direction: column;
     gap: 10px;
     margin-bottom: 20px;
 }
 
-input[type="text"] {
-    flex: 1;
+input[type="text"],
+textarea {
+    box-sizing: border-box;
+    width: 100%;
     padding: 8px 12px;
     border: 1px solid #ccc;
     border-radius: 4px;
+    font-family: inherit;
+    resize: vertical;
 }
 
 button {
@@ -58,6 +63,7 @@ li {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 10px;
     padding: 10px;
     border-bottom: 1px solid #eee;
 }
@@ -66,10 +72,22 @@ li:last-child {
     border-bottom: none;
 }
 
+.task-title {
+    display: block;
+}
+
+.task-description {
+    color: #666;
+    font-size: 14px;
+    margin-top: 4px;
+    overflow-wrap: anywhere;
+}
+
 .delete-btn {
     background-color: #dc3545;
     padding: 4px 8px;
     font-size: 12px;
+    flex-shrink: 0;
 }
 
 .delete-btn:hover {

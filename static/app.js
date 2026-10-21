@@ -8,27 +8,47 @@ async function fetchTasks() {
 
     tasks.forEach(task => {
         const li = document.createElement('li');
-        li.innerHTML = `
-            <span>${task.title}</span>
-            <button class="delete-btn" onclick="deleteTask(${task.id})">Delete</button>
-        `;
+        const taskContent = document.createElement('div');
+        const title = document.createElement('span');
+        const deleteButton = document.createElement('button');
+
+        title.className = 'task-title';
+        title.textContent = task.title;
+        taskContent.appendChild(title);
+
+        if (task.description) {
+            const description = document.createElement('div');
+            description.className = 'task-description';
+            description.textContent = task.description;
+            taskContent.appendChild(description);
+        }
+
+        deleteButton.className = 'delete-btn';
+        deleteButton.textContent = 'Delete';
+        deleteButton.addEventListener('click', () => deleteTask(task.id));
+
+        li.appendChild(taskContent);
+        li.appendChild(deleteButton);
         taskList.appendChild(li);
     });
 }
 
 async function addTask() {
     const titleInput = document.getElementById('task-title');
+    const descriptionInput = document.getElementById('task-description');
     const title = titleInput.value.trim();
+    const description = descriptionInput.value.trim();
 
     if (!title) return;
 
     await fetch('/api/tasks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title })
+        body: JSON.stringify({ title, description })
     });
 
     titleInput.value = '';
+    descriptionInput.value = '';
     fetchTasks();
 }
 
